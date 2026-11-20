@@ -59,7 +59,7 @@ no addons.mozilla.org, com `npx web-ext sign --channel=unlisted`).
 - A extensão pede acesso a todos os sites (`<all_urls>`) porque precisa **baixar as imagens**, que muitas vezes
   ficam em outro domínio (CDN). Sem isso o navegador não deixa ler os pixels. Para limitar o risco:
   nada roda até você aceitar o aviso **e** ativar o site no popup.
-- Antes de processar cada imagem/faixa de OCR e de traduzir cada balão, o background verifica se o site continua autorizado. **Limitação conhecida da v0.1.1:** uma requisição de rede já iniciada não é interrompida automaticamente, e uma tentativa de tradução poderá prosseguir para outro provedor antes da próxima verificação. Não utilize com textos sensíveis.
+- **Desativação e cancelamento:** o background revalida o consentimento e a ativação do site antes de cada imagem, de cada faixa de OCR e de cada balão enviado para tradução. Etapas ainda não iniciadas deixam de ser processadas quando essa verificação falha. **Limitação da v0.1.1:** uma requisição de tradução já iniciada não é abortada; além disso, não há nova verificação de permissão entre provedores alternativos para o mesmo balão. Cada tentativa de rede tem timeout de 8 segundos, mas várias tentativas podem levar mais tempo no total. Por isso, desativar não garante a interrupção imediata de toda atividade de rede. Não use a extensão em páginas com textos sensíveis.
 - O cabeçalho `Referer` (usado por sites que bloqueiam hotlink) é enviado só com a **origem** do site
   (`https://site/`), nunca com o endereço completo da página, e só em pedidos feitos pela própria extensão.
 - Se o addons.mozilla.org pedir a declaração de coleta de dados ao assinar, o texto lido nas imagens vai para
