@@ -4,9 +4,16 @@ Extensão **open source e gratuita** para traduzir balões de mangás, manhwas e
 
 > **Estado: versão experimental v0.1.3.** O código e o pacote automatizado estão disponíveis, mas a extensão **ainda não foi publicada na loja de complementos do Firefox nem passou por validação de funcionamento em navegador**. Não existe, por enquanto, um botão oficial de instalação com um clique.
 
+## Navegadores compatíveis (objetivo)
+
+- **PC: Microsoft Edge**. Há um pacote experimental próprio, baseado em Manifest V3. Ele é montado pelo GitHub Actions como `tradutor-manga-edge` e ainda precisa ser validado no Edge. A versão do Firefox não deve ser carregada no Edge.
+- **Celular: Firefox Android**. Mantemos o pacote Firefox separado, baseado em Manifest V2, gerado como `tradutor-manga`. A instalação permanente depende de assinatura e distribuição da Mozilla.
+
+O pacote Edge utiliza um documento em segundo plano para executar o OCR local. Diferentemente da versão Firefox, a versão Edge ainda não implementa o ajuste de cabeçalho `Referer` para sites com proteção contra acesso direto às imagens.
+
 ## Como será utilizada
 
-Depois da publicação na loja da Mozilla, a experiência prevista é: **Adicionar ao Firefox → abrir a história → aceitar o aviso de privacidade → ativar a tradução para aquele site**. Não será necessário instalar Node.js nem executar comandos.
+Após a publicação nas lojas compatíveis, a experiência prevista será: **adicionar a extensão ao navegador → abrir a história → aceitar o aviso de privacidade → ativar a tradução para aquele site**. Não será necessário instalar Node.js nem executar comandos.
 
 ## Recursos implementados
 
@@ -34,4 +41,4 @@ Depois da publicação na loja da Mozilla, a experiência prevista é: **Adicion
 
 Código licenciado sob [MIT](LICENSE). O GitHub Actions prepara automaticamente o pacote completo, incluindo os arquivos locais necessários ao OCR, executa os testes e o verificador da Mozilla. Para contribuidores, o processo de montagem pode ser consultado em [`.github/workflows/build.yml`](.github/workflows/build.yml). Dependências compiladas em `vendor/` não são versionadas.
 
-O ZIP gerado pelo GitHub Actions **não é uma extensão assinada pela Mozilla**. A publicação na loja e a compatibilidade em navegadores precisam ser confirmadas separadamente.
+Os ZIPs gerados pelo GitHub Actions são **pacotes experimentais**. O pacote Firefox não é assinado pela Mozilla; o Edge usa um formato diferente. A publicação nas lojas e o funcionamento real precisam ser confirmados separadamente.

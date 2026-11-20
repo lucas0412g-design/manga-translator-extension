@@ -58,6 +58,28 @@ jobs:
           path: dist/tradutor-manga.zip
           if-no-files-found: error
 
+      - name: Montar pacote Microsoft Edge (Manifest V3)
+        run: |
+          mkdir -p dist/edge
+          cp -r lib.js background.js content.js popup.css popup.js vendor dist/edge/
+          cp edge/manifest.json dist/edge/manifest.json
+          cp edge/popup.html edge/edge-compat.js edge/edge-offscreen.html edge/edge-offscreen-compat.js edge/edge-service-worker.js dist/edge/
+          test -s dist/edge/vendor/worker.min.js
+          test -s dist/edge/vendor/lang/eng.traineddata.gz
+          test -s dist/edge/vendor/lang/spa.traineddata.gz
+          node --check dist/edge/edge-service-worker.js
+          node --check dist/edge/edge-offscreen-compat.js
+          node --check dist/edge/edge-compat.js
+          node -e "const m=require('./dist/edge/manifest.json'); if(m.manifest_version!==3 || !m.background.service_worker || !m.permissions.includes('offscreen')) process.exit(1)"
+          (cd dist/edge && zip -qr ../tradutor-manga-edge.zip .)
+          ls -lh dist/tradutor-manga-edge.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tradutor-manga-edge
+          path: dist/tradutor-manga-edge.zip
+          if-no-files-found: error
+
   release:
     if: startsWith(github.ref, 'refs/tags/v')
     needs: build

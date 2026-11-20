@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Tradutor de Mangás (Edge experimental)",
+  "version": "0.1.4",
+  "description": "Traduz balões em imagens (inglês/espanhol para português do Brasil).",
+  "minimum_chrome_version": "116",
+  "permissions": ["storage", "unlimitedStorage", "offscreen", "tabs"],
+  "host_permissions": ["<all_urls>"],
+  "background": { "service_worker": "edge-service-worker.js" },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["edge-compat.js", "content.js"],
+    "run_at": "document_idle"
+  }],
+  "action": { "default_title": "Tradutor de Mangás", "default_popup": "popup.html" },
+  "content_security_policy": { "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'" }
+}

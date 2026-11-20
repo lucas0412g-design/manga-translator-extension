@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <h1>Tradutor de Mangás</h1>
+  <p id="host" class="muted"></p>
+
+  <div id="consentBox">
+    <p class="muted">Para traduzir, o <b>texto reconhecido</b> nas imagens (não as imagens) é enviado a serviços
+    gratuitos de tradução (Google Tradutor, MyMemory, Lingva). Nenhum histórico é enviado.</p>
+    <label class="row"><input type="checkbox" id="consent"> Entendo e aceito</label>
+  </div>
+
+  <label class="row"><input type="checkbox" id="site" disabled> Ativar neste site</label>
+  <div class="row">
+    <span>Idioma das imagens</span>
+    <select id="lang">
+      <option value="eng">Inglês</option>
+      <option value="spa">Espanhol</option>
+    </select>
+  </div>
+  <label class="row"><input type="checkbox" id="orig"> Mostrar originais</label>
+  <button id="clear">Limpar cache</button>
+  <p id="status" class="muted"></p>
+  <script src="edge-compat.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
