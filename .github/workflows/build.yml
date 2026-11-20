@@ -1,0 +1,57 @@
+name: Montar pacote da extensão
+
+# Roda sozinho na nuvem do GitHub: instala o OCR, testa e gera o ZIP pronto.
+# Como usar: aba "Actions" > "Montar pacote da extensão" > "Run workflow".
+# Para criar também uma página em "Releases", crie uma tag que comece com v (ex.: v0.1.2).
+on:
+  workflow_dispatch:
+  push:
+    branches: ['main']
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Instalar dependências
+        run: npm install --no-audit --no-fund
+
+      - name: Copiar OCR e idiomas para vendor/
+        run: npm run setup
+
+      - name: Testes
+        run: npm test
+
+      - name: Separar só o que vai na extensão
+        run: |
+          mkdir -p dist/ext
+          cp -r manifest.json lib.js background.js content.js popup.html popup.css popup.js icons vendor dist/ext/
+
+      - name: Verificar a extensão (web-ext lint)
+        run: npx web-ext lint --source-dir dist/ext
+        continue-on-error: true
+
+      - name: Montar o ZIP
+        run: |
+          (cd dist/ext && zip -r ../tradutor-manga.zip .)
+          ls -lh dist/tradutor-manga.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tradutor-manga
+          path: dist/tradutor-manga.zip
+
+      - name: Publicar em Releases (só quando for uma tag v*)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" dist/tradutor-manga.zip --title "${{ github.ref_name }}" --generate-notes

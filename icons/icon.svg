@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96">
+  <rect width="96" height="96" rx="20" fill="#1f6feb"/>
+  <rect x="14" y="16" width="68" height="46" rx="14" fill="#fff"/>
+  <path d="M30 60 L24 80 L48 62 Z" fill="#fff"/>
+  <text x="48" y="48" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#1f6feb" text-anchor="middle">PT</text>
+</svg>

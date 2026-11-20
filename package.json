@@ -1,6 +1,6 @@
 {
   "name": "tradutor-manga",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Extensão do Firefox que traduz balões de mangá (EN/ES para PT-BR)",
   "scripts": {

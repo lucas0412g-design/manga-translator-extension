@@ -1,4 +1,13 @@
-# Tradutor de Mangás v0.1.1
+# Tradutor de Mangás v0.1.2
+
+> **Quem só quer usar:** não precisa de terminal, Node.js nem programação. Quando a extensão estiver publicada,
+> basta abrir a página dela no addons.mozilla.org e tocar em **Adicionar ao Firefox**. Os comandos abaixo são só
+> para quem **desenvolve** a extensão — e dá para dispensá-los: a aba **Actions** do GitHub monta o pacote pronto
+> (workflow "Montar pacote da extensão").
+
+> **Atenção:** o ZIP do GitHub Actions é um pacote de teste. Para instalar com um clique no Firefox,
+> a extensão ainda precisa de teste real, assinatura e distribuição pela Mozilla. O Firefox Android
+> também precisa ser verificado separadamente.
 
 Extensão para o **Firefox** (PC e Android) que lê o texto dos balões em imagens, traduz
 (**inglês ou espanhol → português do Brasil**) e desenha a tradução por cima, sem alterar a imagem.
@@ -59,7 +68,10 @@ no addons.mozilla.org, com `npx web-ext sign --channel=unlisted`).
 - A extensão pede acesso a todos os sites (`<all_urls>`) porque precisa **baixar as imagens**, que muitas vezes
   ficam em outro domínio (CDN). Sem isso o navegador não deixa ler os pixels. Para limitar o risco:
   nada roda até você aceitar o aviso **e** ativar o site no popup.
-- **Desativação e cancelamento:** o background revalida o consentimento e a ativação do site antes de cada imagem, de cada faixa de OCR e de cada balão enviado para tradução. Etapas ainda não iniciadas deixam de ser processadas quando essa verificação falha. **Limitação da v0.1.1:** uma requisição de tradução já iniciada não é abortada; além disso, não há nova verificação de permissão entre provedores alternativos para o mesmo balão. Cada tentativa de rede tem timeout de 8 segundos, mas várias tentativas podem levar mais tempo no total. Por isso, desativar não garante a interrupção imediata de toda atividade de rede. Não use a extensão em páginas com textos sensíveis.
+- Antes de processar cada imagem, cada faixa de OCR e cada balão, o background confirma se o usuário ainda
+  autorizou o site. **Limitação da v0.1.2:** uma solicitação de rede já iniciada não é cancelada imediatamente,
+  e provedores alternativos do mesmo balão ainda podem ser chamados antes da próxima checagem.
+  Evite utilizar em páginas com textos sensíveis.
 - O cabeçalho `Referer` (usado por sites que bloqueiam hotlink) é enviado só com a **origem** do site
   (`https://site/`), nunca com o endereço completo da página, e só em pedidos feitos pela própria extensão.
 - Se o addons.mozilla.org pedir a declaração de coleta de dados ao assinar, o texto lido nas imagens vai para

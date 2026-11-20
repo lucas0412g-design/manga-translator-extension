@@ -1,19 +1,47 @@
 {
   "manifest_version": 2,
-  "name": "Tradutor de Mangás (v0.1.1)",
-  "version": "0.1.1",
+  "name": "Tradutor de Mangás (v0.1.2)",
+  "version": "0.1.2",
   "description": "Traduz o texto de balões em imagens (inglês/espanhol para português do Brasil), com pré-carregamento.",
   "browser_specific_settings": {
-    "gecko": { "id": "tradutor-manga@local.dev", "strict_min_version": "115.0" }
+    "gecko": {
+      "id": "tradutor-manga@local.dev",
+      "strict_min_version": "115.0"
+    }
   },
-  "permissions": ["storage", "unlimitedStorage", "webRequest", "webRequestBlocking", "<all_urls>"],
-  "background": { "scripts": ["vendor/tesseract.min.js", "lib.js", "background.js"] },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "webRequest",
+    "webRequestBlocking",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": [
+      "vendor/tesseract.min.js",
+      "lib.js",
+      "background.js"
+    ]
+  },
   "content_scripts": [
-    { "matches": ["<all_urls>"], "js": ["content.js"], "run_at": "document_idle" }
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
   ],
   "browser_action": {
     "default_title": "Tradutor de Mangás",
-    "default_popup": "popup.html"
+    "default_popup": "popup.html",
+    "default_icon": "icons/icon.svg"
   },
-  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
+  "icons": {
+    "48": "icons/icon.svg",
+    "96": "icons/icon.svg"
+  }
 }
