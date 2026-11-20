@@ -1,19 +1,19 @@
 {
   "name": "tradutor-manga",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "description": "Extensão do Firefox que traduz balões de mangá (EN/ES para PT-BR)",
   "scripts": {
     "setup": "node setup.js",
     "test": "node test.js",
     "start:desktop": "web-ext run --source-dir .",
-    "build": "web-ext build --ignore-files node_modules test.js setup.js package.json package-lock.json README.md"
+    "build": "web-ext build --ignore-files node_modules test.js test-ocr.js tests setup.js package.json package-lock.json README.md PRIVACIDADE.md",
+    "test:ocr": "node test-ocr.js"
   },
   "dependencies": {
     "@tesseract.js-data/eng": "latest",
     "@tesseract.js-data/spa": "latest",
-    "tesseract.js": "5.1.1",
-    "tesseract.js-core": "5.1.1"
+    "tesseract.js": "7.0.0"
   },
   "devDependencies": {
     "web-ext": "^8.0.0"

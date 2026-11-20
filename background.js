@@ -246,7 +246,8 @@ async function ocrTile(bmp, t, worker) {
   const color = renderTile(bmp, t);
   const gray = toGrayStretched(color);
   await worker.setParameters({ tessedit_pageseg_mode: '11', preserve_interword_spaces: '1' });
-  const { data } = await worker.recognize(await gray.convertToBlob({ type: 'image/png' }));
+  // Tesseract.js v6/v7 só retorna texto por padrão; precisamos dos blocos e coordenadas.
+  const { data } = await worker.recognize(await gray.convertToBlob({ type: 'image/png' }), {}, { blocks: true });
   const lines = extractLines(data).filter((l) => l.conf >= CFG.minLineConf && MT.goodText(l.text));
   const out = [];
   for (const b of MT.groupLines(lines)) {

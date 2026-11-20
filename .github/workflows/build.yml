@@ -1,8 +1,6 @@
 name: Montar pacote da extensão
 
-# Roda sozinho na nuvem do GitHub: instala o OCR, testa e gera o ZIP pronto.
-# Como usar: aba "Actions" > "Montar pacote da extensão" > "Run workflow".
-# Para criar também uma página em "Releases", crie uma tag que comece com v (ex.: v0.1.2).
+# Compilação e verificações no GitHub: usuários não precisam de Node.js.
 on:
   workflow_dispatch:
   push:
@@ -10,48 +8,67 @@ on:
     tags: ['v*']
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Instalar dependências
-        run: npm install --no-audit --no-fund
+        run: npm install --no-fund
+
+      - name: Auditar dependências de produção
+        run: npm audit --omit=dev --audit-level=high
 
       - name: Copiar OCR e idiomas para vendor/
         run: npm run setup
 
-      - name: Testes
+      - name: Testes de funções auxiliares
         run: npm test
 
-      - name: Separar só o que vai na extensão
+      - name: Teste real de OCR em inglês e espanhol
+        run: npm run test:ocr
+
+      - name: Separar somente arquivos da extensão
         run: |
           mkdir -p dist/ext
           cp -r manifest.json lib.js background.js content.js popup.html popup.css popup.js icons vendor dist/ext/
+          test -s dist/ext/vendor/tesseract.min.js
+          test -s dist/ext/vendor/worker.min.js
+          test -s dist/ext/vendor/lang/eng.traineddata.gz
+          test -s dist/ext/vendor/lang/spa.traineddata.gz
 
       - name: Verificar a extensão (web-ext lint)
         run: npx web-ext lint --source-dir dist/ext
-        continue-on-error: true
+        # Erros interrompem o build. Avisos da biblioteca OCR não são escondidos.
 
-      - name: Montar o ZIP
+      - name: Montar ZIP
         run: |
-          (cd dist/ext && zip -r ../tradutor-manga.zip .)
+          (cd dist/ext && zip -qr ../tradutor-manga.zip .)
           ls -lh dist/tradutor-manga.zip
 
       - uses: actions/upload-artifact@v4
         with:
           name: tradutor-manga
           path: dist/tradutor-manga.zip
+          if-no-files-found: error
 
-      - name: Publicar em Releases (só quando for uma tag v*)
-        if: startsWith(github.ref, 'refs/tags/v')
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: tradutor-manga
+      - name: Publicar ZIP experimental em Releases
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${{ github.ref_name }}" dist/tradutor-manga.zip --title "${{ github.ref_name }}" --generate-notes
+        run: gh release create "${{ github.ref_name }}" tradutor-manga.zip --title "${{ github.ref_name }}" --generate-notes --prerelease

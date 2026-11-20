@@ -11,12 +11,12 @@ armazenamento local do navegador.
 tradução, nesta ordem: Google Tradutor, MyMemory e Lingva. As imagens, o endereço das páginas e o seu histórico
 de navegação **não** são enviados a esses serviços. Cada serviço tem a própria política de privacidade.
 
-**Quando algo é enviado:** só depois de você aceitar o aviso no popup e ativar a extensão no site.
-O sistema verifica a autorização antes de cada imagem, faixa de OCR e balão. **Limitação atual:**
-um pedido de rede já iniciado pode prosseguir, e a tentativa para o mesmo balão pode passar
-para provedores alternativos antes de uma nova verificação.
+**Quando algo é enviado:** só depois de você aceitar o aviso no popup e ativar a extensão no site. Desativar o
+site interrompe novos envios.
 
 **Imagens:** são baixadas diretamente do site que você está lendo, como o próprio navegador faria; quando o site
 exige, a extensão envia o cabeçalho "Referer" apenas com o endereço de origem (ex.: https://site/).
 
 **Sem cadastro, sem anúncios, sem estatísticas de uso.**
+
+**Declaração do Firefox:** `websiteContent` é declarado no manifesto porque parte do conteúdo visível da página (texto reconhecido) sai do navegador para a tradução. Não significa coleta de imagens ou histórico de navegação pela extensão.

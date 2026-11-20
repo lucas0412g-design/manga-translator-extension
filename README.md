@@ -1,93 +1,37 @@
-# Tradutor de Mangás v0.1.2
+# Tradutor de Mangás
 
-> **Quem só quer usar:** não precisa de terminal, Node.js nem programação. Quando a extensão estiver publicada,
-> basta abrir a página dela no addons.mozilla.org e tocar em **Adicionar ao Firefox**. Os comandos abaixo são só
-> para quem **desenvolve** a extensão — e dá para dispensá-los: a aba **Actions** do GitHub monta o pacote pronto
-> (workflow "Montar pacote da extensão").
+Extensão **open source e gratuita** para traduzir balões de mangás, manhwas e webtoons diretamente nas imagens, de **inglês ou espanhol para português do Brasil**.
 
-> **Atenção:** o ZIP do GitHub Actions é um pacote de teste. Para instalar com um clique no Firefox,
-> a extensão ainda precisa de teste real, assinatura e distribuição pela Mozilla. O Firefox Android
-> também precisa ser verificado separadamente.
+> **Estado: versão experimental v0.1.3.** O código e o pacote automatizado estão disponíveis, mas a extensão **ainda não foi publicada na loja de complementos do Firefox nem passou por validação de funcionamento em navegador**. Não existe, por enquanto, um botão oficial de instalação com um clique.
 
-Extensão para o **Firefox** (PC e Android) que lê o texto dos balões em imagens, traduz
-(**inglês ou espanhol → português do Brasil**) e desenha a tradução por cima, sem alterar a imagem.
+## Como será utilizada
 
-> Status: código escrito e com as funções puras testadas (`npm test`), mas **ainda não testado em
-> um Firefox real**. Espere ajustes nos primeiros testes.
+Depois da publicação na loja da Mozilla, a experiência prevista é: **Adicionar ao Firefox → abrir a história → aceitar o aviso de privacidade → ativar a tradução para aquele site**. Não será necessário instalar Node.js nem executar comandos.
 
-## 1. Instalar as dependências (uma vez)
+## Recursos implementados
 
-Precisa do [Node.js](https://nodejs.org) (versão 18 ou mais nova).
+- Reconhecimento de texto (OCR) com Tesseract.js, processado localmente, em inglês e espanhol.
+- Tradução automática para português, com provedores externos de reserva quando um serviço falhar.
+- Exibição da tradução por cima do balão, sem modificar a imagem original.
+- Leitura progressiva das imagens próximas da área visível e cache de até 14 dias.
+- Botão **PT** para alternar tradução/original; toque em um balão para revelar a versão original.
+- Ativação por site e aviso explícito antes do uso de serviços externos.
 
-```
-npm install
-npm run setup
-npm test
-```
+## Privacidade
 
-`npm run setup` copia o Tesseract.js e os dados de inglês/espanhol para a pasta `vendor/`
-(a extensão não pode baixar código de fora).
+**Somente o texto reconhecido** é enviado aos serviços externos de tradução (Google Tradutor via interface não oficial, MyMemory e Lingva). O OCR roda localmente. A extensão solicita acesso amplo a URLs para poder obter imagens armazenadas em CDNs, mas processa capítulos somente em sites ativados pelo usuário. Consulte [PRIVACIDADE.md](PRIVACIDADE.md) para detalhes.
 
-## 2. Testar no Firefox do PC
+**Limitação atual do cancelamento:** a autorização é verificada antes de cada imagem, faixa de OCR e balão. Uma requisição já iniciada ainda pode continuar; dentro de um mesmo balão podem ocorrer tentativas de provedores alternativos antes de uma nova checagem. Evite usar em páginas com texto sensível.
 
-```
-npm run start:desktop
-```
+## Limitações
 
-Abra um site de leitura, clique no ícone da extensão, aceite o aviso de privacidade,
-ative **"Ativar neste site"** e role a página. O botão azul **PT** (canto da tela) alterna
-entre tradução e original. Tocar num balão traduzido mostra o original daquele balão.
+- Imagens em `canvas`, URLs `blob:` e leitores com restrições especiais ainda podem não funcionar.
+- Textos manuscritos, efeitos sonoros e fontes estilizadas podem ser reconhecidos incorretamente.
+- A tradução ainda ocorre balão por balão. Memória de personagens e revisão contextual estão planejadas para versões futuras.
+- O serviço de tradução não oficial pode falhar ou aplicar limites; não há garantia de disponibilidade ilimitada.
 
-## 3. Testar no Moto G56 (Firefox Android)
+## Código aberto e compilação
 
-1. No celular: Configurações → Sobre o telefone → toque 7 vezes em "Número da versão"; depois
-   ative **Depuração USB** nas opções do desenvolvedor.
-2. No Firefox Android: Configurações → **Depuração remota via USB** (ativar).
-3. No PC (com o `adb` instalado e o celular conectado): `adb devices` para ver o ID e então
+Código licenciado sob [MIT](LICENSE). O GitHub Actions prepara automaticamente o pacote completo, incluindo os arquivos locais necessários ao OCR, executa os testes e o verificador da Mozilla. Para contribuidores, o processo de montagem pode ser consultado em [`.github/workflows/build.yml`](.github/workflows/build.yml). Dependências compiladas em `vendor/` não são versionadas.
 
-```
-npx web-ext run --target=firefox-android --android-device ID_DO_CELULAR
-```
-
-Para instalar de forma permanente é preciso **assinar** a extensão (gratuito, canal "unlisted"
-no addons.mozilla.org, com `npx web-ext sign --channel=unlisted`).
-
-## Como funciona
-
-- **Pré-carregamento:** imagens até ~3000 px acima/abaixo da tela entram na fila; a mais próxima
-  da tela vai primeiro. Até 2 pedidos ao mesmo tempo; o OCR roda 1 imagem por vez.
-- **OCR:** Tesseract.js em Web Worker. Imagens compridas são fatiadas; blocos com baixa confiança
-  ganham uma segunda leitura; abaixo de 55% de confiança o balão fica **sem tradução** (mantém o original).
-- **Tradução:** Google Tradutor (interface não oficial) → MyMemory → Lingva, nessa ordem. Se um
-  provedor devolve erro 429/403 ele entra em "descanso" por 10 minutos. Resultados ficam em cache
-  (14 dias). Só o **texto** sai do celular, nunca a imagem.
-- **Visual:** caixa na cor do fundo do balão, letras em CAIXA ALTA quando o original era assim.
-
-## Segurança e privacidade
-
-- A extensão pede acesso a todos os sites (`<all_urls>`) porque precisa **baixar as imagens**, que muitas vezes
-  ficam em outro domínio (CDN). Sem isso o navegador não deixa ler os pixels. Para limitar o risco:
-  nada roda até você aceitar o aviso **e** ativar o site no popup.
-- Antes de processar cada imagem, cada faixa de OCR e cada balão, o background confirma se o usuário ainda
-  autorizou o site. **Limitação da v0.1.2:** uma solicitação de rede já iniciada não é cancelada imediatamente,
-  e provedores alternativos do mesmo balão ainda podem ser chamados antes da próxima checagem.
-  Evite utilizar em páginas com textos sensíveis.
-- O cabeçalho `Referer` (usado por sites que bloqueiam hotlink) é enviado só com a **origem** do site
-  (`https://site/`), nunca com o endereço completo da página, e só em pedidos feitos pela própria extensão.
-- Se o addons.mozilla.org pedir a declaração de coleta de dados ao assinar, o texto lido nas imagens vai para
-  serviços de tradução de terceiros (tipo "conteúdo do site").
-- Mantém-se na memória só as camadas de tradução das imagens perto da tela; as demais voltam pelo cache.
-
-## Limitações conhecidas
-
-- Só Firefox por enquanto (usa a API `browser.*`). O Vivaldi Android aceita extensões do Chrome,
-  mas precisa de uma adaptação (Manifest V3).
-- Leitores que desenham em `canvas`, usam `blob:` ou protegem a imagem podem ser pulados.
-- Sites em que tocar na imagem passa a página: o toque em balão traduzido vira "mostrar original".
-- Letra manuscrita e onomatopeias têm leitura fraca.
-- Tradução balão a balão: ainda sem contexto entre falas nem memória de personagens (v0.2).
-
-## Ajustes rápidos (`background.js`, objeto `CFG`)
-
-`minBlockConf` (mais alto = menos erros, mais balões sem tradução), `refineBelow`,
-`maxTileMP` (menor = OCR mais leve), `providers` (ordem dos tradutores).
+O ZIP gerado pelo GitHub Actions **não é uma extensão assinada pela Mozilla**. A publicação na loja e a compatibilidade em navegadores precisam ser confirmadas separadamente.
